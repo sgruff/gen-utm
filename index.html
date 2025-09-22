@@ -266,7 +266,7 @@
             if (anchorLink) {
                 formattedNavValue = `#${anchorLink}`;
             } else if (navigateToText) {
-                formattedNavValue = `'${navigateToText}'`;
+                formattedNavValue = `"${navigateToText}"`;
             }
             
             const allItems = [description, url, source, medium, campaign, id, formattedNavValue].join('\t');
