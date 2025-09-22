@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Builder Tool</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-10">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">URL Builder</h1>
+        <p class="text-center text-gray-500 mb-8">
+            Generate URLs with UTM tracking, anchor links, and scroll-to-text navigation.
+        </p>
+
+        <!-- Form for input fields -->
+        <form id="urlForm" class="space-y-6">
+            <!-- Form fields container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <input type="text" id="description" placeholder="e.g. Q4 Marketing Campaign" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <!-- Destination URL -->
+                <div>
+                    <label for="destinationUrl" class="block text-sm font-medium text-gray-700 mb-1">Destination URL <span class="text-red-500">*</span></label>
+                    <input type="url" id="destinationUrl" required placeholder="https://example.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+            </div>
+
+            <!-- Navigation fields container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border border-dashed border-gray-300 rounded-lg">
+                <!-- Anchor Link -->
+                <div>
+                    <label for="anchorLink" class="block text-sm font-medium text-gray-700 mb-1">Anchor Link</label>
+                    <input type="text" id="anchorLink" placeholder="e.g. section-3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <!-- Navigate to Text -->
+                <div>
+                    <label for="navigateToText" class="block text-sm font-medium text-gray-700 mb-1">Navigate to Text</label>
+                    <input type="text" id="navigateToText" placeholder="e.g. Our Services" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+            </div>
+
+            <!-- UTM fields container -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4 border border-dashed border-gray-300 rounded-lg">
+                <!-- Source -->
+                <div>
+                    <label for="source" class="block text-sm font-medium text-gray-700 mb-1">Source</label>
+                    <input type="text" id="source" placeholder="e.g. google" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <!-- Medium -->
+                <div>
+                    <label for="medium" class="block text-sm font-medium text-gray-700 mb-1">Medium</label>
+                    <input type="text" id="medium" placeholder="e.g. cpc" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <!-- Campaign -->
+                <div>
+                    <label for="campaign" class="block text-sm font-medium text-gray-700 mb-1">Campaign</label>
+                    <input type="text" id="campaign" placeholder="e.g. summer-sale" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+                <!-- ID -->
+                <div>
+                    <label for="id" class="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                    <input type="text" id="id" placeholder="e.g. 12345" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                </div>
+            </div>
+
+            <!-- Error Message Box -->
+            <div id="messageBox" class="hidden p-4 rounded-lg text-sm font-medium"></div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+                <button type="button" id="generateBtn" class="w-full sm:w-1/2 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md">Generate</button>
+                <button type="button" id="resetBtn" class="w-full sm:w-1/2 bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-200 shadow-md">Reset</button>
+            </div>
+        </form>
+
+        <!-- Result section, initially hidden -->
+        <div id="resultSection" class="mt-8 pt-8 border-t border-gray-200 hidden">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Generated URL</h2>
+            <div class="bg-gray-100 p-6 rounded-lg break-words shadow-inner">
+                <p id="resultDescription" class="text-gray-500 italic mb-2"></p>
+                <p id="resultUrl" class="text-gray-900 font-mono"></p>
+            </div>
+            
+            <div class="mt-6 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <button id="copyUrlBtn" class="w-full sm:w-1/2 bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-200 shadow-md">
+                    Copy URL
+                </button>
+                <button id="copyBothBtn" class="w-full sm:w-1/2 bg-purple-500 text-white py-3 rounded-lg font-semibold hover:bg-purple-600 transition duration-200 shadow-md">
+                    Copy Both
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get elements from the DOM
+        const form = document.getElementById('urlForm');
+        const destinationUrlInput = document.getElementById('destinationUrl');
+        const anchorLinkInput = document.getElementById('anchorLink');
+        const navigateToTextInput = document.getElementById('navigateToText');
+        const generateBtn = document.getElementById('generateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultSection = document.getElementById('resultSection');
+        const resultDescription = document.getElementById('resultDescription');
+        const resultUrl = document.getElementById('resultUrl');
+        const copyUrlBtn = document.getElementById('copyUrlBtn');
+        const copyBothBtn = document.getElementById('copyBothBtn');
+        const messageBox = document.getElementById('messageBox');
+
+        // Function to display messages
+        function showMessage(message, isError = false) {
+            messageBox.textContent = message;
+            messageBox.classList.remove('hidden');
+            if (isError) {
+                messageBox.classList.remove('bg-green-100', 'text-green-800');
+                messageBox.classList.add('bg-red-100', 'text-red-800');
+            } else {
+                messageBox.classList.remove('bg-red-100', 'text-red-800');
+                messageBox.classList.add('bg-green-100', 'text-green-800');
+            }
+        }
+
+        // Function to generate the URL
+        function generateUrl() {
+            // Validation: Destination URL is required
+            if (!destinationUrlInput.value) {
+                showMessage("Please enter a Destination URL.", true);
+                return;
+            }
+
+            // Validation: Only one navigation field can be filled
+            if (anchorLinkInput.value && navigateToTextInput.value) {
+                showMessage("Please fill out either Anchor Link or Navigate to Text, but not both.", true);
+                return;
+            }
+
+            // Hide any previous messages
+            messageBox.classList.add('hidden');
+
+            const destination = destinationUrlInput.value.trim();
+            const url = new URL(destination);
+            
+            // Build the URLSearchParams object for UTMs
+            const params = new URLSearchParams();
+            const utmFields = {
+                'source': document.getElementById('source').value.trim(),
+                'medium': document.getElementById('medium').value.trim(),
+                'campaign': document.getElementById('campaign').value.trim(),
+                'id': document.getElementById('id').value.trim()
+            };
+
+            for (const key in utmFields) {
+                if (utmFields[key]) {
+                    params.append(`utm_${key}`, utmFields[key]);
+                }
+            }
+
+            // Append UTM parameters if any are present
+            const queryString = params.toString();
+            if (queryString) {
+                if (url.search) {
+                    url.search += '&' + queryString;
+                } else {
+                    url.search = '?' + queryString;
+                }
+            }
+
+            // Add navigation
+            if (anchorLinkInput.value) {
+                url.hash = anchorLinkInput.value.trim();
+            } else if (navigateToTextInput.value) {
+                const text = encodeURIComponent(navigateToTextInput.value.trim()).replace(/%20/g, ' ');
+                url.hash = `:~:text=${text}`;
+            }
+
+            // Display results
+            resultDescription.textContent = document.getElementById('description').value || "No description provided.";
+            resultUrl.textContent = url.toString();
+            resultSection.classList.remove('hidden');
+        }
+
+        // Function to handle clipboard copy
+        function copyToClipboard(textToCopy) {
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showMessage("Copied to clipboard!", false);
+            } catch (err) {
+                showMessage("Failed to copy. Please copy manually.", true);
+                console.error('Copy to clipboard failed:', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateUrl);
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            resultSection.classList.add('hidden');
+            messageBox.classList.add('hidden');
+        });
+        copyUrlBtn.addEventListener('click', () => {
+            copyToClipboard(resultUrl.textContent);
+        });
+        copyBothBtn.addEventListener('click', () => {
+            const description = resultDescription.textContent;
+            const url = resultUrl.textContent;
+            copyToClipboard(`${description}\t${url}`);
+        });
+    </script>
+</body>
+</html>
